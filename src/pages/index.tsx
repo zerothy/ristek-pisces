@@ -87,6 +87,17 @@ const HomeHeader: React.FC = () => {
   );
 }
 
+const DataShow: React.FC = () => {
+  return (
+    <div className="flex justify-center items-center py-8">
+      <div className="bg-blue-200 w-[90%] h-[35.85rem] rounded-xl p-6">
+        <div className="text-white font-monserrat font-bold text-2xl">Data Show</div>
+      </div>
+    </div>
+  );
+
+}
+
 export default function Home() {
   const [showModal, setShowModal] = useState(false)
   
@@ -95,13 +106,15 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-[#03002e] w-[82%]">
+    <div className="bg-[#03002e] w-[82%] overflow-hidden">
       <div className="flex justify-center p-2 border-b-2 border-[#ffc900] border-solid border-opacity-40">
         <div onClick={toggleModal}>
           <HomeHeader />
         </div>
       </div>
-      
+      <div className="">
+        <DataShow />
+      </div>
     </div>
   );
 }

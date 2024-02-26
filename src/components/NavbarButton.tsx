@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 // ICONS
 import { AiOutlineSearch } from "react-icons/ai";
+import { link } from 'fs';
 
 //TODO: Add the rest of the navbar items
 //! Make use of other website youve made
@@ -28,7 +29,13 @@ const NavLink = ({name, linkGoTo}: {name: string, linkGoTo: string}) => {
     const [mouseDown, setMouseDown] = useState(false)
     const handleMouseDown = () => setMouseDown(true)
 
+    const [currentPage, setCurrentPage] = useState('')
+
     const router = useRouter()
+
+    useEffect(() => {
+    setCurrentPage(router.pathname)
+    }, [router.pathname])
 
     return (
         <div 
@@ -36,10 +43,10 @@ const NavLink = ({name, linkGoTo}: {name: string, linkGoTo: string}) => {
             onMouseDown={handleMouseDown}
             onMouseUp={() => setMouseDown(false)}
             
-            className={`text-white cursor-pointer mt-2 mx-4 py-2 pl-4 duration-200 transition-all hover:bg-[#010057] hover:rounded-lg ${mouseDown ? 'scale-100' : 'hover:scale-105'}`}
+            className={`${currentPage === linkGoTo ? '' : 'text-gray-400 cursor-pointer mt-2 mx-4 py-2 pl-4 hover:bg-[#010057] hover:rounded-lg'} ${mouseDown ? 'scale-100' : 'hover:scale-105'} duration-200 transition-all`}
         > 
             <Link href={linkGoTo}>
-                <div className=''>
+                <div className={`${currentPage === linkGoTo && 'text-white font-bold scale-105 bg-[#09008893] rounded-lg mt-2 mx-4 py-2 pl-4'} duration-100 transition-all`}>
                     { name }
                 </div>
             </Link>
