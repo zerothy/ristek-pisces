@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import Head from "next/head";
 import { useState } from "react";
 import React from "react";
+import CurrencyInput, { CurrencyInputProps, CurrencyInputOnChangeValues } from 'react-currency-input-field';
+import CurrencyInputValue from 'react-currency-input-field';
 
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 
@@ -11,7 +13,44 @@ const inter = Inter({ subsets: ["latin"] });
 const HomeHeader = () => {
   const [mouseDown, setMouseDown] = useState(false);
   const handleMouseDown = () => setMouseDown(true);
+
   const [showModal, setShowModal] = useState(false);
+
+  const [value, setValue] = useState<CurrencyInputProps>({
+    value: 0,
+    decimalsLimit: 2,
+    intlConfig: { locale: 'id-ID', currency: 'IDR' },
+    min: 0,
+    onChange: (event) => {
+      const newValue = event.target.value || 0;
+      const formattedValue = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 2,
+      }).format(Number(newValue));
+
+      setValue({
+        ...value,
+        value: newValue,
+      });
+    },
+  });
+
+  // TODO: FIX THIS FKIN CODE TO WORK 
+  // const handleChange = (event: CurrencyInputOnChangeValues<number>) => {
+  //   const newValue = event.value || 0;
+  //   const formattedValue = new Intl.NumberFormat('id-ID', {
+  //     style: 'currency',
+  //     currency: 'IDR',
+  //     minimumFractionDigits: 2,
+  //   }).format(newValue);
+
+  //   setValue({
+  //     value: newValue,
+  //     formattedValue: formattedValue,
+  //     error: newValue < 0,
+  //   });
+  // };
 
   const toggleModal = () => {
     setShowModal(!showModal)
@@ -38,9 +77,15 @@ const HomeHeader = () => {
       >
         <div 
           onClick={(e) => e.stopPropagation()}
-          className="w-96 h-96 bg-[#010048] rounded-xl border-4 border-[#ffc900] border-solid border-opacity-40"
+          className="w-96 h-96 bg-[#010048] rounded-xl border-4 border-[#ffc900] border-solid border-opacity-40 flex justify-center items-center"
         >
-          hei
+          <CurrencyInput
+            placeholder="Rp 0,00"
+            className="bg-slate-500 text-center rounded-xl px-3 pt-3 pb-8 outline-none font-monserrat font-extrabold text-2xl text-white no-spinners"
+            intlConfig={{ locale: 'id-ID', currency: 'IDR' }}
+            min={0}
+            decimalsLimit={2}
+          />
         </div>
       </div>
     </div>

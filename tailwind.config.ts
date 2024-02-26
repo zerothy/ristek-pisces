@@ -17,6 +17,19 @@ const config: Config = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }: { addUtilities: Function }) {
+      const newUtilities = {
+        '.no-spinners::-webkit-inner-spin-button, .no-spinners::-webkit-outer-spin-button': {
+          '-webkit-appearance': 'none',
+          margin: '0',
+        },
+        '.no-spinners': {
+          '-moz-appearance': 'textfield',
+        },
+      }
+      addUtilities(newUtilities)
+    }
+  ],
 };
 export default config;
