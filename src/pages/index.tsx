@@ -4,6 +4,8 @@ import Head from "next/head";
 import { useState } from "react";
 import { useEffect } from "react";
 import React from "react";
+import data from "../data/data.json";
+import account from "../data/account.json";
 
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
@@ -25,10 +27,10 @@ const HomeHeader: React.FC = () => {
 
   const [showModal, setShowModal] = useState(false);
 
-  const [value, setValue] = useState<number>(NaN);
+  const [value, setValue] = useState<number>('' as unknown as number);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "") return setValue(NaN);
-    if (parseInt(e.target.value) < 0) return setValue(NaN);
+    if (e.target.value === "") return setValue('' as unknown as number);
+    if (parseInt(e.target.value) < 0) return setValue('' as unknown as number);
     if (parseInt(e.target.value) > 1000000000) return setValue(1000000000);
     setValue(parseInt(e.target.value));
   };
@@ -71,11 +73,11 @@ const HomeHeader: React.FC = () => {
               max={1000000000}
             />
             <div className="flex justify-evenly p-4 w-full"> 
-              <div onMouseDown={handleReceiveMouseDown} onMouseUp={handleReceiveMouseUp} className={`bg-[#9092ff] text-gray-900 duration-150 cursor-pointer transition-all py-2 px-4 font-monserrat font-bold rounded-3xl ${receiveMouseDown ? 'scale-100' : 'hover:scale-105'}`}>
+              <div onMouseDown={handleReceiveMouseDown} onMouseUp={handleReceiveMouseUp} className={`bg-[#9092ff] text-gray-900 duration-150 cursor-pointer transition-all py-2 px-4 font-monserrat font-bold rounded-3xl ${receiveMouseDown ? 'scale-100 duration-75' : 'hover:scale-105'}`}>
                 <IoMdCheckmarkCircleOutline className="inline-block mb-[0.2rem] mr-2" />
                 Receive
               </div>
-              <div onMouseDown={handleSpendMouseDown} onMouseUp={handleSpendMouseUp} className={`bg-[#575899] text-slate-200 duration-150 cursor-pointer transition-all pl-4 py-2 pr-5 font-monserrat font-bold rounded-3xl ${spendMouseDown ? 'scale-100' : 'hover:scale-105'}`}>
+              <div onMouseDown={handleSpendMouseDown} onMouseUp={handleSpendMouseUp} className={`bg-[#575899] text-slate-200 duration-150 cursor-pointer transition-all pl-4 py-2 pr-5 font-monserrat font-bold rounded-3xl ${spendMouseDown ? 'scale-100 duration-75' : 'hover:scale-105'}`}>
                 <RiMoneyDollarCircleLine className="inline-block mb-[0.2rem] mr-2 text-xl" />
                 Spend
               </div>
@@ -88,10 +90,29 @@ const HomeHeader: React.FC = () => {
 }
 
 const DataShow: React.FC = () => {
+  const [date, setDate] = useState(new Date());
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+  }
+
   return (
-    <div className="flex justify-center items-center py-8">
-      <div className="bg-blue-200 w-[90%] h-[35.85rem] rounded-xl p-6">
-        <div className="text-white font-monserrat font-bold text-2xl">Data Show</div>
+    <div className="py-4 px-6">
+      <div className="text-slate-200 opacity-70 text-sm">Welcome back,</div>
+      <div className="text-white font-monserrat font-bold text-2xl">Hello, {account.name}!</div>
+      <div className="flex flex-column">
+        <div className="font-monserrat text-slate-200 font-semibold bg-gradient-to-r from-[#2c67f2] via-[#0032a8] to-[#002477] border-2 border-solid border-[#2c67f2] w-[50%] h-48 rounded-xl mt-5">
+          <div className="pt-6 pl-6">Balance</div>
+          <div className="text-5xl pl-5 pt-3 text-white">
+            {formatCurrency(account.balance)}
+          </div>
+          <div className="text-sm pl-6 pt-9">{days[date.getDay()]}, {date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+        </div>
+        <div className="text-white font-monserrat font-semibold pt-5 w-[50%] flex flex-col justify-evenly pl-6 space-y-3">
+          <div className="bg-[#010057cd] py-8 rounded-xl">Inflow</div>
+          <div className="bg-[#010057cd] py-8 rounded-xl">Outflow</div>
+        </div>
       </div>
     </div>
   );
