@@ -59,7 +59,6 @@ const SearchBar = () => {
     const [mouseDown, setMouseDown] = useState(false)
     const handleMouseDown = () => setMouseDown(true)
     
-    //TODO: Make the search start from the left and expand to the right
     return (
         <div
             draggable={false}
@@ -81,7 +80,7 @@ const SearchBar = () => {
     )
 
 }
-
+    
 export default function NavbarButton() {
     return (
         <div>

@@ -1,19 +1,26 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
-import Head from "next/head";
 import { useState } from "react";
 import { useEffect } from "react";
 import React from "react";
-import data from "../data/data.json";
-import account from "../data/account.json";
+import account from "../data/account.json"; //! NANTI GANTI JADI GA STATIC  
+import Selector from "../components/Selector";
 
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
+import { BiSolidCoinStack } from "react-icons/bi";
+import { LiaCoinsSolid } from "react-icons/lia";
+
+import api from "./api/posts";
+import axios, {isCancel, AxiosError} from 'axios';
 
 const inter = Inter({ subsets: ["latin"] });
 
-const HomeHeader: React.FC = () => {
+//TODO: MAKE IT RESPONSIVE U FUCKING IDIOT
+
+const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (value: number) => void, setNewType: (value: string) => void, setRefetch: (value: boolean) => void }> = ({ newAmount, setNewAmount, newType, setNewType, setRefetch }) => {
+
+
   const [mouseDown, setMouseDown] = useState(false);
   const handleMouseDown = () => setMouseDown(true);
 
@@ -28,12 +35,55 @@ const HomeHeader: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [value, setValue] = useState<number>('' as unknown as number);
+  const [desc, setDesc] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState('Category')
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "") return setValue('' as unknown as number);
-    if (parseInt(e.target.value) < 0) return setValue('' as unknown as number);
-    if (parseInt(e.target.value) > 1000000000) return setValue(1000000000);
+    if (e.target.value === ""){
+      setNewAmount(0);
+      return setValue('' as unknown as number);
+    }
+    if (parseInt(e.target.value) < 0){
+      setNewAmount(0);
+      return setValue('' as unknown as number);
+    }
+    if (parseInt(e.target.value) > 1000000000){
+      setNewAmount(1000000000);
+      return setValue(1000000000);
+    }
     setValue(parseInt(e.target.value));
+    setNewAmount(parseInt(e.target.value));
   };
+
+  const handleInputDescription = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDesc(e.target.value);
+  }
+
+  // Post data to API
+  const handleButton = async (newTypes: string) => {
+    try {
+      if(newAmount === 0) return;
+      const response = await api.post('/posts', {
+        Amount: newAmount,
+        Types: newTypes,
+        Note: desc
+      });
+      setRefetch(true);
+      console.log(response);
+    } catch (err: any) {
+      if (axios.isCancel(err)) {
+        console.log('Request canceled', err.message);
+      } else if (err.response) {
+        console.log(err.response.data);
+        console.log(err.response.status);
+        console.log(err.response.headers);
+      } else if (err.request) {
+        console.log(err.request);
+      } else {
+        console.log('Error', err.message);
+      }
+    }
+  }
 
   const toggleModal = () => {
     setShowModal(!showModal)
@@ -62,7 +112,7 @@ const HomeHeader: React.FC = () => {
           onClick={(e) => e.stopPropagation()}
           className="w-max h-max p-6 bg-gradient-to-br from-[#010048af] via-[#020078b2] to-[#0805adaf] rounded-xl border-4 border-[#ffc900] border-solid border-opacity-40 flex justify-center items-center"
         > 
-          <div className="absolute mr-[16rem] mb-[6.6rem] text-white font-monserrat font-bold text-md">Amount</div>
+          <div className="absolute mr-[16rem] mb-[13rem] text-white font-monserrat font-bold text-md">Amount</div>
           <div className="flex flex-col items-center">
             <input
               placeholder="Rp 0,00"
@@ -72,12 +122,42 @@ const HomeHeader: React.FC = () => {
               value={value}
               max={1000000000}
             />
+
+            <input 
+              placeholder="Description"
+              type="text"
+              maxLength={30}
+              onChange={handleInputDescription}
+              className="py-1 mt-3 pl-3 w-full outline-none bg-[#100da8af] text-white font-monserrat font-semibold rounded-lg"
+            />
+
+            <div className="flex justify-evenly w-full py-3">
+              <Selector selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+              <div className="bg-blue-200 p-1 px-4 w-10">Date</div>
+            </div>
+
             <div className="flex justify-evenly p-4 w-full"> 
-              <div onMouseDown={handleReceiveMouseDown} onMouseUp={handleReceiveMouseUp} className={`bg-[#9092ff] text-gray-900 duration-150 cursor-pointer transition-all py-2 px-4 font-monserrat font-bold rounded-3xl ${receiveMouseDown ? 'scale-100 duration-75' : 'hover:scale-105'}`}>
+              <div 
+                onClick={() => {
+                  handleButton("income");
+                  toggleModal();
+                }} 
+                onMouseDown={handleReceiveMouseDown} 
+                onMouseUp={handleReceiveMouseUp} 
+                className={`bg-[#9092ff] text-gray-900 duration-150 cursor-pointer transition-all py-2 px-4 font-monserrat font-bold rounded-3xl ${receiveMouseDown ? 'scale-100 duration-75' : 'hover:scale-105'}`}
+              >
                 <IoMdCheckmarkCircleOutline className="inline-block mb-[0.2rem] mr-2" />
                 Receive
               </div>
-              <div onMouseDown={handleSpendMouseDown} onMouseUp={handleSpendMouseUp} className={`bg-[#575899] text-slate-200 duration-150 cursor-pointer transition-all pl-4 py-2 pr-5 font-monserrat font-bold rounded-3xl ${spendMouseDown ? 'scale-100 duration-75' : 'hover:scale-105'}`}>
+              <div 
+                onClick={() => {
+                  handleButton("expense");
+                  toggleModal();
+                }} 
+                onMouseDown={handleSpendMouseDown} 
+                onMouseUp={handleSpendMouseUp} 
+                className={`bg-[#575899] text-slate-200 duration-150 cursor-pointer transition-all pl-4 py-2 pr-5 font-monserrat font-bold rounded-3xl ${spendMouseDown ? 'scale-100 duration-75' : 'hover:scale-105'}`}
+              >
                 <RiMoneyDollarCircleLine className="inline-block mb-[0.2rem] mr-2 text-xl" />
                 Spend
               </div>
@@ -89,7 +169,66 @@ const HomeHeader: React.FC = () => {
   );
 }
 
-const DataShow: React.FC = () => {
+const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean, setRefetch: (value: boolean) => void }> = ({ newAmount, newType, refetch, setRefetch }) => {
+  const [posts, setPosts] = useState([] as any)
+  const [dataInflow, setDataInflow] = useState(0);
+  const [dataOutflow, setDataOutflow] = useState(0);
+  const [dataBalance, setDataBalance] = useState(0);
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await api.get('/posts');
+        setPosts(response.data);
+      } catch (err: any) {
+        // Not in the 200 response range
+        if (axios.isCancel(err)) {
+          console.log('Request canceled', err.message);
+        } else if (err.response) {
+          // The request was made and the server responded with a status code
+          console.log(err.response.data);
+          console.log(err.response.status);
+          console.log(err.response.headers);
+        } else if (err.request) {
+          // The request was made but no response was received
+          console.log(err.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', err.message);
+        }
+      }
+    }
+
+    const calcMoney = async () => {
+      await fetchPosts();
+      console.log("REFETCH");
+      console.log(refetch);
+      if (posts.posts) {
+        let dataInflow = 0;
+        let dataOutflow = 0;
+        posts.posts.map((post: any) => {
+          console.log(post);
+          if (post.Types === "income") {
+            dataInflow += post.Amount;
+          }
+
+          if (post.Types === "expense") {
+            dataOutflow += post.Amount;
+          }
+
+          setDataInflow(dataInflow);
+          setDataOutflow(dataOutflow);
+          setDataBalance(dataInflow - dataOutflow);
+        })
+      }
+      setRefetch(false);
+    }
+
+    calcMoney();
+  }, [refetch])
+  /* API END */  
+
   const [date, setDate] = useState(new Date());
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -101,19 +240,38 @@ const DataShow: React.FC = () => {
     <div className="py-4 px-6">
       <div className="text-slate-200 opacity-70 text-sm">Welcome back,</div>
       <div className="text-white font-monserrat font-bold text-2xl">Hello, {account.name}!</div>
-      <div className="flex flex-column">
-        <div className="font-monserrat text-slate-200 font-semibold bg-gradient-to-r from-[#2c67f2] via-[#0032a8] to-[#002477] border-2 border-solid border-[#2c67f2] w-[50%] h-48 rounded-xl mt-5">
+
+      <div className="flex flex-col lg:flex-row">
+        <div className="font-monserrat text-slate-200 font-semibold bg-gradient-to-r from-[#2c67f2] via-[#0032a8] to-[#002477] border-2 border-solid border-[#2c67f2] w-[50%] h-48 rounded-xl mt-5 duration-150 transition-all hover:scale-105 cursor-default">
           <div className="pt-6 pl-6">Balance</div>
-          <div className="text-5xl pl-5 pt-3 text-white">
-            {formatCurrency(account.balance)}
+          <div className="text-3xl lg:text-5xl pl-5 pt-3 text-white">
+            {formatCurrency(dataBalance)}
           </div>
           <div className="text-sm pl-6 pt-9">{days[date.getDay()]}, {date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
         </div>
+
         <div className="text-white font-monserrat font-semibold pt-5 w-[50%] flex flex-col justify-evenly pl-6 space-y-3">
-          <div className="bg-[#010057cd] py-8 rounded-xl">Inflow</div>
-          <div className="bg-[#010057cd] py-8 rounded-xl">Outflow</div>
+          <div
+            className="bg-[#010057cd] flex flex-column py-3 rounded-xl hover:scale-105 duration-150 transition-all cursor-default"
+          ><LiaCoinsSolid className="inline text-6xl fill-slate-300" />
+            <div className="inline">    
+              <span className="text-sm font-normal text-slate-300">Inflow</span>
+              <br />
+              <span className="text-2xl">{formatCurrency(dataInflow)}</span>
+            </div>
+          </div>
+          <div 
+            className="bg-[#010057cd] flex flex-column py-3 rounded-xl hover:scale-105 duration-150 transition-all cursor-default"
+          ><BiSolidCoinStack className="inline text-6xl fill-slate-300" />
+            <div className="inline">
+              <span className="text-sm font-normal text-slate-300">Outflow</span>
+              <br />
+              <span className="text-2xl">{formatCurrency(dataOutflow)}</span>
+            </div>
+            </div>
         </div>
       </div>
+      
     </div>
   );
 
@@ -121,20 +279,23 @@ const DataShow: React.FC = () => {
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false)
+  const [newAmount, setNewAmount] = useState(0);
+  const [newType, setNewType] = useState('' as unknown as string);
+  const [refetch, setRefetch] = useState(true);
   
   const toggleModal = () => {
     setShowModal(!showModal)
   }
 
   return (
-    <div className="bg-[#03002e] w-[82%] overflow-hidden">
+    <div className="bg-[#03002e] h-dvh w-full md:w-[82%] overflow-hidden">
       <div className="flex justify-center p-2 border-b-2 border-[#ffc900] border-solid border-opacity-40">
         <div onClick={toggleModal}>
-          <HomeHeader />
+          <HomeHeader newAmount={newAmount} newType={newType} setNewAmount={setNewAmount} setNewType={setNewType} setRefetch={setRefetch} />
         </div>
       </div>
       <div className="">
-        <DataShow />
+        <DataShow newAmount={newAmount} newType={newType} refetch={refetch} setRefetch={setRefetch} />
       </div>
     </div>
   );

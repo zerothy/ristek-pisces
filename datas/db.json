@@ -1,0 +1,44 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "amount": 100000,
+      "types": "income",
+      "category": "Salary",
+      "date": "01/01/2021",
+      "note": "This is a note"
+    },
+    {
+      "id": 2,
+      "amount": 100000,
+      "types": "expense",
+      "category": "Food",
+      "date": "01/01/2021",
+      "note": "This is a note"
+    },
+    {
+      "id": 3,
+      "amount": 100000,
+      "types": "income",
+      "category": "Salary",
+      "date": "01/01/2021",
+      "note": "This is a note"
+    },
+    {
+      "id": 4,
+      "amount": 100000,
+      "types": "expense",
+      "category": "Food",
+      "date": "01/01/2021",
+      "note": "This is a note"
+    },
+    {
+      "id": 5,
+      "amount": 100000,
+      "types": "income",
+      "category": "Salary",
+      "date": "01/01/2021",
+      "note": "This is a note"
+    }
+  ]
+}
