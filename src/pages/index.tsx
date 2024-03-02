@@ -4,23 +4,30 @@ import { useEffect } from "react";
 import React from "react";
 import account from "../data/account.json"; //! NANTI GANTI JADI GA STATIC  
 import Selector from "../components/Selector";
+import DateButton from "../components/DateButton";
+import TransactionList from "../components/TransactionList";
 
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
-import { BiSolidCoinStack } from "react-icons/bi";
-import { LiaCoinsSolid } from "react-icons/lia";
+import { MdOutlineShoppingCart } from "react-icons/md";
+import { FaMoneyBillTrendUp } from "react-icons/fa6";
 
 import api from "./api/posts";
 import axios, {isCancel, AxiosError} from 'axios';
+import posts from "./api/posts";
 
 const inter = Inter({ subsets: ["latin"] });
 
-//TODO: MAKE IT RESPONSIVE U FUCKING IDIOT
+//TODO: MAKE IT RESPONSIVE BRO
 
 const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (value: number) => void, setNewType: (value: string) => void, setRefetch: (value: boolean) => void }> = ({ newAmount, setNewAmount, newType, setNewType, setRefetch }) => {
-
-
+  const [value, setValue] = useState<number>('' as unknown as number);
+  const [desc, setDesc] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState('Category')
+  const [startDate, setStartDate] = React.useState<Date>(new Date()); 
+  const [selectedDate, setSelectedDate] = useState(startDate)
+  
   const [mouseDown, setMouseDown] = useState(false);
   const handleMouseDown = () => setMouseDown(true);
 
@@ -34,9 +41,6 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
 
   const [showModal, setShowModal] = useState(false);
 
-  const [value, setValue] = useState<number>('' as unknown as number);
-  const [desc, setDesc] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState('Category')
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === ""){
@@ -59,14 +63,20 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
     setDesc(e.target.value);
   }
 
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   // Post data to API
   const handleButton = async (newTypes: string) => {
     try {
-      if(newAmount === 0) return;
+      if(newAmount === '' as unknown as number || newAmount === 0) {
+        return;
+      }
       const response = await api.post('/posts', {
         Amount: newAmount,
         Types: newTypes,
-        Note: desc
+        Category: selectedCategory,
+        Note: desc,
+        Dates: selectedDate.toLocaleDateString('en-GB')
       });
       setRefetch(true);
       console.log(response);
@@ -133,7 +143,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
 
             <div className="flex justify-evenly w-full py-3">
               <Selector selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
-              <div className="bg-blue-200 p-1 px-4 w-10">Date</div>
+              <DateButton selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
             </div>
 
             <div className="flex justify-evenly p-4 w-full"> 
@@ -141,6 +151,9 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
                 onClick={() => {
                   handleButton("income");
                   toggleModal();
+                  setValue('' as unknown as number);
+                  setDesc("");
+                  setSelectedCategory("Category");
                 }} 
                 onMouseDown={handleReceiveMouseDown} 
                 onMouseUp={handleReceiveMouseUp} 
@@ -153,6 +166,10 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
                 onClick={() => {
                   handleButton("expense");
                   toggleModal();
+                  setValue('' as unknown as number);
+                  setDesc("");
+                  setSelectedCategory("Category");
+                  setSelectedDate(new Date());
                 }} 
                 onMouseDown={handleSpendMouseDown} 
                 onMouseUp={handleSpendMouseUp} 
@@ -174,6 +191,7 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
   const [dataInflow, setDataInflow] = useState(0);
   const [dataOutflow, setDataOutflow] = useState(0);
   const [dataBalance, setDataBalance] = useState(0);
+  const [transactionPosts, setTransactionPosts] = useState([] as any);
 
   // Fetch data from API
   useEffect(() => {
@@ -200,15 +218,16 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
       }
     }
 
-    const calcMoney = async () => {
+    const loadInData = async () => {
       await fetchPosts();
+
       console.log("REFETCH");
       console.log(refetch);
+      
       if (posts.posts) {
         let dataInflow = 0;
         let dataOutflow = 0;
         posts.posts.map((post: any) => {
-          console.log(post);
           if (post.Types === "income") {
             dataInflow += post.Amount;
           }
@@ -221,11 +240,17 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
           setDataOutflow(dataOutflow);
           setDataBalance(dataInflow - dataOutflow);
         })
+
+        console.log("before: " + transactionPosts);
+        setTransactionPosts(posts.posts);
+        console.log("after: " + transactionPosts);
       }
       setRefetch(false);
     }
 
-    calcMoney();
+    loadInData();
+
+    
   }, [refetch])
   /* API END */  
 
@@ -235,6 +260,8 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
   }
+
+  console.log("POSTS: " + transactionPosts);
 
   return (
     <div className="py-4 px-6">
@@ -252,8 +279,8 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
 
         <div className="text-white font-monserrat font-semibold pt-5 w-[50%] flex flex-col justify-evenly pl-6 space-y-3">
           <div
-            className="bg-[#010057cd] flex flex-column py-3 rounded-xl hover:scale-105 duration-150 transition-all cursor-default"
-          ><LiaCoinsSolid className="inline text-6xl fill-slate-300" />
+            className="bg-[#010057cd] flex flex-column px-3 py-3 rounded-xl hover:scale-105 duration-150 transition-all cursor-default"
+          ><FaMoneyBillTrendUp className="inline text-5xl pt-2 pr-2 fill-slate-300" />
             <div className="inline">    
               <span className="text-sm font-normal text-slate-300">Inflow</span>
               <br />
@@ -261,8 +288,8 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
             </div>
           </div>
           <div 
-            className="bg-[#010057cd] flex flex-column py-3 rounded-xl hover:scale-105 duration-150 transition-all cursor-default"
-          ><BiSolidCoinStack className="inline text-6xl fill-slate-300" />
+            className="bg-[#010057cd] flex flex-column py-3 px-3 rounded-xl hover:scale-105 duration-150 transition-all cursor-default"
+          ><MdOutlineShoppingCart className="inline text-5xl pr-1 fill-slate-300" />
             <div className="inline">
               <span className="text-sm font-normal text-slate-300">Outflow</span>
               <br />
@@ -271,7 +298,9 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
             </div>
         </div>
       </div>
-      
+      <div className="justify-center flex">
+        <TransactionList key={transactionPosts.length} posts={transactionPosts} />
+      </div>
     </div>
   );
 
@@ -288,13 +317,13 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-[#03002e] h-dvh w-full md:w-[82%] overflow-hidden">
+    <div className="bg-[#03002e] w-full md:w-[82%] overflow-hidden">
       <div className="flex justify-center p-2 border-b-2 border-[#ffc900] border-solid border-opacity-40">
         <div onClick={toggleModal}>
           <HomeHeader newAmount={newAmount} newType={newType} setNewAmount={setNewAmount} setNewType={setNewType} setRefetch={setRefetch} />
         </div>
       </div>
-      <div className="">
+      <div>
         <DataShow newAmount={newAmount} newType={newType} refetch={refetch} setRefetch={setRefetch} />
       </div>
     </div>
