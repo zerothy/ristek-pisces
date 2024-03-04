@@ -5,7 +5,9 @@ import type { AppProps } from "next/app";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <main className="flex justify-between font-montserrat">
-      <Navbar />
+      <div className="w-[18%]">
+        <Navbar />
+      </div>
       <Component {...pageProps} />
     </main>
   );

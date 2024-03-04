@@ -2,7 +2,6 @@ import { Inter } from "next/font/google";
 import { useState } from "react";
 import { useEffect } from "react";
 import React from "react";
-import account from "../data/account.json"; //! NANTI GANTI JADI GA STATIC  
 import Selector from "../components/Selector";
 import DateButton from "../components/DateButton";
 import TransactionList from "../components/TransactionList";
@@ -152,8 +151,9 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
                   handleButton("income");
                   toggleModal();
                   setValue('' as unknown as number);
-                  setDesc("");
+                  setDesc("" as unknown as string);
                   setSelectedCategory("Category");
+                  setSelectedDate(new Date());
                 }} 
                 onMouseDown={handleReceiveMouseDown} 
                 onMouseUp={handleReceiveMouseUp} 
@@ -167,7 +167,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
                   handleButton("expense");
                   toggleModal();
                   setValue('' as unknown as number);
-                  setDesc("");
+                  setDesc("" as unknown as string);
                   setSelectedCategory("Category");
                   setSelectedDate(new Date());
                 }} 
@@ -223,33 +223,41 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
 
       console.log("REFETCH");
       console.log(refetch);
-      
-      if (posts.posts) {
-        let dataInflow = 0;
-        let dataOutflow = 0;
-        posts.posts.map((post: any) => {
-          if (post.Types === "income") {
-            dataInflow += post.Amount;
-          }
 
-          if (post.Types === "expense") {
-            dataOutflow += post.Amount;
-          }
+      // console.log(posts)
 
-          setDataInflow(dataInflow);
-          setDataOutflow(dataOutflow);
-          setDataBalance(dataInflow - dataOutflow);
-        })
+      if (posts.postsByDate) {
+          // Init variables here
+          let dataInflow = 0;
+          let dataOutflow = 0;
 
-        console.log("before: " + transactionPosts);
-        setTransactionPosts(posts.posts);
-        console.log("after: " + transactionPosts);
+          Object.keys(posts.postsByDate).forEach((key) => {
+            posts.postsByDate[key].map((post: any) => {
+              Object.keys(post).forEach((key) => {
+                // Code goes here
+                if(key === "Types") {
+                  console.log("CEK: " + post.Amount)
+                  if (post[key] === "income") {
+                    dataInflow += post.Amount;
+                  }
+                  if (post[key] === "expense") {
+                    dataOutflow += post.Amount;
+                  }
+                }
+              })
+            })
+            setDataInflow(dataInflow);
+            setDataOutflow(dataOutflow);
+            setDataBalance(dataInflow - dataOutflow);
+          })
+
+          setTransactionPosts(posts.postsByDate);
       }
+
       setRefetch(false);
     }
 
     loadInData();
-
     
   }, [refetch])
   /* API END */  
@@ -261,12 +269,10 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
     return amount.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
   }
 
-  console.log("POSTS: " + transactionPosts);
-
   return (
     <div className="py-4 px-6">
       <div className="text-slate-200 opacity-70 text-sm">Welcome back,</div>
-      <div className="text-white font-monserrat font-bold text-2xl">Hello, {account.name}!</div>
+      <div className="text-white font-monserrat font-bold text-2xl">Hello, Joe Mathew!</div>
 
       <div className="flex flex-col lg:flex-row">
         <div className="font-monserrat text-slate-200 font-semibold bg-gradient-to-r from-[#2c67f2] via-[#0032a8] to-[#002477] border-2 border-solid border-[#2c67f2] w-[50%] h-48 rounded-xl mt-5 duration-150 transition-all hover:scale-105 cursor-default">
@@ -317,7 +323,7 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-[#03002e] w-full md:w-[82%] overflow-hidden">
+    <div className="bg-[#03002e] w-full min-h-svh md:w-[82%]">
       <div className="flex justify-center p-2 border-b-2 border-[#ffc900] border-solid border-opacity-40">
         <div onClick={toggleModal}>
           <HomeHeader newAmount={newAmount} newType={newType} setNewAmount={setNewAmount} setNewType={setNewType} setRefetch={setRefetch} />
