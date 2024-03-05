@@ -15,10 +15,6 @@ const navbarItems = [{
     name: 'Dashboard',
     linkTo: '/'
 }, {
-    id:'transactions',
-    name: 'Transactions',
-    linkTo: '/transactions'
-}, {
     id: 'profile',
     name: 'Profile',
     linkTo: '/profile'

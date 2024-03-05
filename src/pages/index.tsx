@@ -75,7 +75,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
         Types: newTypes,
         Category: selectedCategory,
         Note: desc,
-        Dates: selectedDate.toLocaleDateString('en-GB')
+        Dates: selectedDate.toLocaleDateString('ja-Jp')
       });
       setRefetch(true);
       console.log(response);
@@ -170,7 +170,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
                   setDesc("" as unknown as string);
                   setSelectedCategory("Category");
                   setSelectedDate(new Date());
-                }} 
+                }}
                 onMouseDown={handleSpendMouseDown} 
                 onMouseUp={handleSpendMouseUp} 
                 className={`bg-[#575899] text-slate-200 duration-150 cursor-pointer transition-all pl-4 py-2 pr-5 font-monserrat font-bold rounded-3xl ${spendMouseDown ? 'scale-100 duration-75' : 'hover:scale-105'}`}
