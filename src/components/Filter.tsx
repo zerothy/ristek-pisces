@@ -19,7 +19,6 @@ function Filter({ selectedCategory, setSelectedCategory, showSelector, setShowSe
 
     const fetchPosts = async () => {
         try {
-            
             const url = `http://localhost:3000/?category=${selectedCategory || ""}`;
             router.push(url);
             const response = await api.get(url);

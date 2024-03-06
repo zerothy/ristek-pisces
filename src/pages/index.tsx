@@ -6,6 +6,7 @@ import Selector from "../components/Selector";
 import DateButton from "../components/DateButton";
 import TransactionList from "../components/TransactionList";
 import Filter from "../components/Filter";
+import { Toaster, toast } from "sonner";
 
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
@@ -70,6 +71,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
   const handleButton = async (newTypes: string) => {
     try {
       if(newAmount === '' as unknown as number || newAmount === 0) {
+        toast.warning('Amount cannot be empty')
         return;
       }
       const response = await api.post('/posts', {
@@ -79,6 +81,9 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
         Note: desc,
         Dates: selectedDate.toLocaleDateString('ja-Jp')
       });
+      setNewAmount(0);
+      setNewType("");
+      toast.success('Success in setting amount')
       setRefetch(true);
       console.log(response);
     } catch (err: any) {
@@ -345,6 +350,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#03002e] w-full min-h-svh xl:w-[82%]">
+      <Toaster richColors position="bottom-left" />
       <div className="flex justify-center p-2 border-b-2 border-[#ffc900] border-solid border-opacity-40">
         <div onClick={toggleModal}>
           <HomeHeader newAmount={newAmount} newType={newType} setNewAmount={setNewAmount} setNewType={setNewType} setRefetch={setRefetch} />
