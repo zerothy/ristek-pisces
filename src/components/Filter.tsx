@@ -11,7 +11,6 @@ function Filter({ selectedCategory, setSelectedCategory, showSelector, setShowSe
     const [mouseDown, setMouseDown] = useState(false)
 
     const toggleSelector = () => {
-        console.log("toggle" + showSelector)
         setShowSelector(!showSelector)
     }
 
@@ -20,10 +19,10 @@ function Filter({ selectedCategory, setSelectedCategory, showSelector, setShowSe
 
     const fetchPosts = async () => {
         try {
-            const { category } = router.query;
-            const url = `http://localhost:8080/posts?category=${category || ""}`;
+            
+            const url = `http://localhost:3000/?category=${selectedCategory || ""}`;
+            router.push(url);
             const response = await api.get(url);
-            console.log(response.data);
 
         } catch (err: any) {
             // handle error
@@ -60,6 +59,7 @@ function Filter({ selectedCategory, setSelectedCategory, showSelector, setShowSe
                             onClick={() => {
                                 setShowSelector(!showSelector)
                                 setSelectedCategory(item)
+                                console.log("selected category: " + selectedCategory)
                                 fetchPosts()
                             }}
                         >
