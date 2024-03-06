@@ -6,7 +6,7 @@ import api from "../pages/api/posts";
 import axios from "axios";
 
 function Filter({ selectedCategory, setSelectedCategory, showSelector, setShowSelector }: { selectedCategory: string, showSelector: boolean, setSelectedCategory: (category: string) => void, setShowSelector: (show: boolean) => void }) {
-    const category = ["Food", "Clothes", "Transportation", "Entertainment", "Health", "Education", "Others"];
+    const category = ["All", "Food", "Clothes", "Transportation", "Entertainment", "Health", "Education", "Others"];
 
     const [mouseDown, setMouseDown] = useState(false)
 

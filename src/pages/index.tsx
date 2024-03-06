@@ -22,10 +22,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 //TODO: MAKE IT RESPONSIVE BRO
 
-const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (value: number) => void, setNewType: (value: string) => void, setRefetch: (value: boolean) => void }> = ({ newAmount, setNewAmount, newType, setNewType, setRefetch }) => {
+const HomeHeader: React.FC<{ newAmount: number, newType: string, selectedCategory: string, setSelectedCategory: (value: string) => void, setNewAmount: (value: number) => void, setNewType: (value: string) => void, setRefetch: (value: boolean) => void }> = ({ newAmount, setNewAmount, newType, setNewType, setRefetch, setSelectedCategory, selectedCategory }) => {
   const [value, setValue] = useState<number>('' as unknown as number);
   const [desc, setDesc] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState('Category')
   const [startDate, setStartDate] = React.useState<Date>(new Date()); 
   const [selectedDate, setSelectedDate] = useState(startDate)
   
@@ -213,7 +212,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
   );
 }
 
-const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean, setRefetch: (value: boolean) => void }> = ({ newAmount, newType, refetch, setRefetch }) => {
+const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean, selectedCategory: string, setRefetch: (value: boolean) => void, setSelectedCategory: (value: string) => void }> = ({ newAmount, newType, selectedCategory, refetch, setRefetch }) => {
   const [posts, setPosts] = useState([] as any)
   const [dataInflow, setDataInflow] = useState(0);
   const [dataOutflow, setDataOutflow] = useState(0);
@@ -331,7 +330,7 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
         </div>
       </div>
       <div className="justify-center flex">
-        <TransactionList key={transactionPosts.length} posts={transactionPosts} />
+        <TransactionList key={transactionPosts.length} posts={transactionPosts} filter={selectedCategory} />
       </div>
     </div>
   );
@@ -343,6 +342,7 @@ export default function Home() {
   const [newAmount, setNewAmount] = useState(0);
   const [newType, setNewType] = useState('' as unknown as string);
   const [refetch, setRefetch] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('All' as unknown as string)
   
   const toggleModal = () => {
     setShowModal(!showModal)
@@ -353,11 +353,11 @@ export default function Home() {
       <Toaster richColors position="bottom-left" />
       <div className="flex justify-center p-2 border-b-2 border-[#ffc900] border-solid border-opacity-40">
         <div onClick={toggleModal}>
-          <HomeHeader newAmount={newAmount} newType={newType} setNewAmount={setNewAmount} setNewType={setNewType} setRefetch={setRefetch} />
+          <HomeHeader newAmount={newAmount} newType={newType} setNewAmount={setNewAmount} setNewType={setNewType} setRefetch={setRefetch} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
         </div>
       </div>
       <div>
-        <DataShow newAmount={newAmount} newType={newType} refetch={refetch} setRefetch={setRefetch} />
+        <DataShow newAmount={newAmount} newType={newType} refetch={refetch} setRefetch={setRefetch} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
       </div>
     </div>
   );
