@@ -21,9 +21,9 @@ export default function TransactionList({ posts }: { posts: any }) {
         return (
             <div key={key} >
                 <div className="bg-[#03002e] px-5 text-white text-sm py-2 flex flex-row" >
-                    <div className="w-28 font-semibold text-center">{category}</div>
-                    <div className="w-28 font-semibold text-center ">{formattedDate}</div>
-                    <div className="mx-3 w-3/4 font-semibold text-left ">{note}</div>
+                    <div className={`w-28 font-semibold text-center ${category === "Category" ? "text-[#3e5172]" : ""}`}>{category === "Category" ? "Not set" : category}</div>
+                    <div className="w-28 ml-2 font-semibold text-center text-slate-200 bg-[#314567] rounded-sm">{formattedDate}</div>
+                    <div className="mr-3 ml-5 w-3/4 font-semibold text-left ">{note}</div>
 
                     <div className={`w-36 font-semibold text-right  ${types === "income" ? "text-green-400" : "text-red-400"}`}>{formatCurrency(amount)}</div>
                 </div>
@@ -43,7 +43,6 @@ export default function TransactionList({ posts }: { posts: any }) {
                                 <div className="text-base font-semibold pl-3 text-slate-300">{days[outerKeyDate.getDay()]}</div>
                                 <div className="text-xs text-slate-300 pl-3">{months[outerKeyDate.getMonth()]} {outerKeyDate.getFullYear()}</div>
                             </div>
-
                             {data[outerKey].map((post: any, innerKey: any) => (
                                 <div key={`${outerKey}-${innerKey}`}>
                                     {showData({ key: `${outerKey}-${innerKey}`, amount: post.Amount, types: post.Types, category: post.Category, dates: post.Dates, note: post.Note })}

@@ -1,15 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
 
-import { IoFastFoodOutline } from "react-icons/io5"; //<IoFastFoodOutline />
-import { GiClothes } from "react-icons/gi"; //<GiClothes />
-import { FaCar } from "react-icons/fa"; //<FaCar />
-import { TbBuildingCircus } from "react-icons/tb";//<TbBuildingCircus />
-import { FaRegHospital } from "react-icons/fa"; //<FaRegHospital />
-import { FaSchoolFlag } from "react-icons/fa6"; //<FaSchoolFlag />
-import { BsThreeDots } from "react-icons/bs"; //<BsThreeDots />
-
-
 function Selector({selectedCategory, setSelectedCategory}: {selectedCategory: string, setSelectedCategory: (category: string) => void}){
     const category = ["Food", "Clothes", "Transportation", "Entertainment", "Health", "Education", "Others"];
 

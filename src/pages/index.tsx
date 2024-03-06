@@ -5,16 +5,17 @@ import React from "react";
 import Selector from "../components/Selector";
 import DateButton from "../components/DateButton";
 import TransactionList from "../components/TransactionList";
+import Filter from "../components/Filter";
 
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
+import { FaFilter } from "react-icons/fa";
 
 import api from "./api/posts";
 import axios, {isCancel, AxiosError} from 'axios';
-import posts from "./api/posts";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,6 +40,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
   const handleSpendMouseUp = () => setSpendMouseDown(false);
 
   const [showModal, setShowModal] = useState(false);
+  const [showSelector, setShowSelector] = useState(false);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,18 +100,38 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, setNewAmount: (
     setShowModal(!showModal)
   }
 
+  const toggleSelector = () => {
+    setShowSelector(!showSelector)
+  }
+
   return (
     <div>
-      {/* Assign Button */}
-      <div 
-        draggable={false}
-        onMouseDown={handleMouseDown}
-        onMouseUp={() => setMouseDown(false)}
-        onClick={toggleModal}
-        className={`bg-green-500 w-max py-2 pl-4 pr-5 font-monserrat font-extrabold rounded-md cursor-pointer duration-150 transition-all ${mouseDown ? 'scale-100' : 'hover:scale-105'}`}
-      >
-            Assign
-            <TbTriangleInvertedFilled className={`inline-block w-[0.7rem] ml-2 mb-1 ${showModal && 'rotate-180'} transition-all duration-300`}/>
+      <div className="flex-row flex items-center">
+        {/* Filter Button */}
+        <div 
+          onMouseDown={handleMouseDown} 
+          onMouseUp={() => setMouseDown(false)} 
+          className="h-max w-16 px-4"
+        >
+          <div onClick={toggleSelector}>
+            <FaFilter className={`text-white text-xl cursor-pointer transition-all duration-200 hover:rounded-full hover:bg-white hover:text-[#03002e] hover:size-8 hover:border-2 hover:border-white ${mouseDown ? 'scale-75' : 'scale-100'} ${showSelector ? "rounded-full bg-white text-[#03002e] size-8 border-2 border-white" : ""}`} />
+          </div>
+          <div className={`absolute ${showSelector ? "scale-105" : "scale-0"}`}>
+            <Filter selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} showSelector={showSelector} setShowSelector={setShowSelector} /> 
+          </div>
+        </div>
+
+        {/* Assign Button */}
+        <div 
+          draggable={false}
+          onMouseDown={handleMouseDown}
+          onMouseUp={() => setMouseDown(false)}
+          onClick={toggleModal}
+          className={`bg-green-500 w-max py-2 pl-4 pr-5 font-monserrat font-extrabold rounded-md cursor-pointer duration-150 transition-all ${mouseDown ? 'scale-100' : 'hover:scale-105'}`}
+        >
+              Assign
+              <TbTriangleInvertedFilled className={`inline-block w-[0.7rem] ml-2 mb-1 ${showModal && 'rotate-180'} transition-all duration-300`}/>
+        </div>
       </div>
 
       {/* Modal */}
@@ -236,7 +258,6 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
               Object.keys(post).forEach((key) => {
                 // Code goes here
                 if(key === "Types") {
-                  console.log("CEK: " + post.Amount)
                   if (post[key] === "income") {
                     dataInflow += post.Amount;
                   }
@@ -275,15 +296,15 @@ const DataShow: React.FC<{ newAmount: number, newType: string, refetch: boolean,
       <div className="text-white font-monserrat font-bold text-2xl">Hello, Joe Mathew!</div>
 
       <div className="flex flex-col lg:flex-row">
-        <div className="font-monserrat text-slate-200 font-semibold bg-gradient-to-r from-[#2c67f2] via-[#0032a8] to-[#002477] border-2 border-solid border-[#2c67f2] w-[50%] h-48 rounded-xl mt-5 duration-150 transition-all hover:scale-105 cursor-default">
+        <div className="font-monserrat text-slate-200 font-semibold bg-gradient-to-r from-[#2c67f2] via-[#0032a8] to-[#002477] border-2 border-solid border-[#2c67f2] lg:w-[50%] w-full h-48 rounded-xl mt-5 duration-150 transition-all hover:scale-105 cursor-default">
           <div className="pt-6 pl-6">Balance</div>
-          <div className="text-3xl lg:text-5xl pl-5 pt-3 text-white">
+          <div className="text-3xl xl:text-5xl pl-5 pt-3 text-white">
             {formatCurrency(dataBalance)}
           </div>
           <div className="text-sm pl-6 pt-9">{days[date.getDay()]}, {date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
         </div>
 
-        <div className="text-white font-monserrat font-semibold pt-5 w-[50%] flex flex-col justify-evenly pl-6 space-y-3">
+        <div className="text-white font-monserrat font-semibold pt-5 lg:w-[50%] w-full flex flex-col justify-evenly lg:pl-6 pl-1 space-y-3">
           <div
             className="bg-[#010057cd] flex flex-column px-3 py-3 rounded-xl hover:scale-105 duration-150 transition-all cursor-default"
           ><FaMoneyBillTrendUp className="inline text-5xl pt-2 pr-2 fill-slate-300" />
@@ -323,7 +344,7 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-[#03002e] w-full min-h-svh md:w-[82%]">
+    <div className="bg-[#03002e] w-full min-h-svh xl:w-[82%]">
       <div className="flex justify-center p-2 border-b-2 border-[#ffc900] border-solid border-opacity-40">
         <div onClick={toggleModal}>
           <HomeHeader newAmount={newAmount} newType={newType} setNewAmount={setNewAmount} setNewType={setNewType} setRefetch={setRefetch} />

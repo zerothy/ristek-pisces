@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import axios from 'axios'
+import api from "../pages/api/posts"
 
 // ICONS
 import { AiOutlineSearch } from "react-icons/ai";
@@ -54,6 +56,21 @@ const SearchBar = () => {
     const [isClicked, setIsClicked] = useState(false)
     const [mouseDown, setMouseDown] = useState(false)
     const handleMouseDown = () => setMouseDown(true)
+
+    const [input, setInput] = useState("")
+    const handleInputChange = (value: string) => {
+        setInput(value)
+    }
+
+    const router = useRouter()
+    const { types } = router.query
+
+    console.log("search: " + types)
+
+    useEffect(() => {
+        const { category } = router.query
+    }, [router])
+
     
     return (
         <div
@@ -67,6 +84,8 @@ const SearchBar = () => {
                 type="text"
                 placeholder='Search'
                 maxLength={50}
+                value={input}
+                onChange={(e) => handleInputChange(e.target.value)}
                 className={`text-left w-[60%] outline-none placeholder:text-center bg-[#010057] text-white py-1 cursor-pointer ${mouseDown && 'scale-105'} transition-all duration-200`}
             />
             <AiOutlineSearch 
@@ -79,7 +98,7 @@ const SearchBar = () => {
     
 export default function NavbarButton() {
     return (
-        <div>
+        <div className='h-full'>
             <SearchBar />
             <div className="cursor-default">
                 {
@@ -88,6 +107,7 @@ export default function NavbarButton() {
                     ))
                 }
             </div>
+            <footer className="text-gray-500 text-xs flex justify-center items-end h-[73%]">© 2024 Pisces. All rights reserved.</footer>
         </div>
     )
 }
