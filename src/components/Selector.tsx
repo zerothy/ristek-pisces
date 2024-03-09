@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 
-function Selector({selectedCategory, setSelectedCategory}: {selectedCategory: string, setSelectedCategory: (category: string) => void}){
+function Selector({selectedCategory, setSelectedCategory, currentCategory, setCurrentCategory }: {selectedCategory: string, setSelectedCategory: (category: string) => void, currentCategory: string, setCurrentCategory: (category: string) => void}){
     const category = ["Food", "Clothes", "Transportation", "Entertainment", "Health", "Education", "Others"];
 
     const [mouseDown, setMouseDown] = useState(false)
@@ -22,7 +22,7 @@ function Selector({selectedCategory, setSelectedCategory}: {selectedCategory: st
                             className="text-center text-[#32288b] font-semibold hover:bg-[#32288b] hover:text-[#1E90FF] transition-all duration-75 cursor-pointer"
                             onClick={() => {
                                 toggleSelector()
-                                setSelectedCategory(item)
+                                setCurrentCategory(item)
                             }}
                         >
                             {item}
@@ -41,7 +41,7 @@ function Selector({selectedCategory, setSelectedCategory}: {selectedCategory: st
                 onMouseUp={() => setMouseDown(false)}
                 className={`bg-[#1E90FF] cursor-pointer pb-1 w-32 h-max font-bold text-[#32288b] border-2 border-[#32288b] border-solid rounded-xl text-center duration-150 transition-all ${mouseDown ? 'scale-100' : 'hover:scale-105'}`}
             >
-                {selectedCategory}
+                {currentCategory}
             </div>
             <div
                 className={`absolute bg-[#1E90FF] border-2 border-solid border-[#32288b] rounded-xl text-center duration-150 transition-all origin-top ${showSelector ? 'scale-100' : 'scale-0'}`}

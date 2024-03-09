@@ -58,7 +58,6 @@ function Filter({ selectedCategory, setSelectedCategory, showSelector, setShowSe
                             onClick={() => {
                                 setShowSelector(!showSelector)
                                 setSelectedCategory(item)
-                                console.log("selected category: " + selectedCategory)
                                 fetchPosts()
                             }}
                         >

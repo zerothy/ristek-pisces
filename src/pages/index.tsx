@@ -41,6 +41,7 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, selectedCategor
 
   const [showModal, setShowModal] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState("All" as unknown as string);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,24 +68,25 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, selectedCategor
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   // Post data to API
-  const handleButton = async (newTypes: string) => {
+  const handleButton = async (newTypes: string, newCategory: string) => {
     try {
       if(newAmount === '' as unknown as number || newAmount === 0) {
         toast.warning('Amount cannot be empty')
         return;
       }
+
       const response = await api.post('/posts', {
         Amount: newAmount,
         Types: newTypes,
-        Category: selectedCategory,
+        Category: newCategory, //! FIXED HERE
         Note: desc,
         Dates: selectedDate.toLocaleDateString('ja-Jp')
       });
       setNewAmount(0);
       setNewType("");
       toast.success('Success in setting amount')
+      setSelectedCategory("All"); //! FIXED HERE
       setRefetch(true);
-      console.log(response);
     } catch (err: any) {
       if (axios.isCancel(err)) {
         console.log('Request canceled', err.message);
@@ -167,18 +169,19 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, selectedCategor
             />
 
             <div className="flex justify-evenly w-full py-3">
-              <Selector selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+              <Selector selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} currentCategory={currentCategory} setCurrentCategory={setCurrentCategory} />
               <DateButton selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
             </div>
 
             <div className="flex justify-evenly p-4 w-full"> 
               <div 
                 onClick={() => {
-                  handleButton("income");
+                  handleButton("income", currentCategory);
                   toggleModal();
                   setValue('' as unknown as number);
                   setDesc("" as unknown as string);
-                  setSelectedCategory("Category");
+                  setSelectedCategory("All"); //! FIXED HERE
+                  setCurrentCategory("All"); //! FIXED HERE
                   setSelectedDate(new Date());
                 }} 
                 onMouseDown={handleReceiveMouseDown} 
@@ -190,11 +193,12 @@ const HomeHeader: React.FC<{ newAmount: number, newType: string, selectedCategor
               </div>
               <div 
                 onClick={() => {
-                  handleButton("expense");
+                  handleButton("expense", currentCategory);
                   toggleModal();
                   setValue('' as unknown as number);
                   setDesc("" as unknown as string);
-                  setSelectedCategory("Category");
+                  setSelectedCategory("All"); //! FIXED HERE
+                  setCurrentCategory("All"); //! FIXED HERE
                   setSelectedDate(new Date());
                 }}
                 onMouseDown={handleSpendMouseDown} 
