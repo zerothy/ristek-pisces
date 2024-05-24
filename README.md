@@ -4,6 +4,18 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 # Ristek Pisces
 
+![Money Management Web](https://i.imgur.com/PAdwaug.png "Money Management Web")
+<p>This project is a web application that can help you manage your money. You can add your income and outcome, and filter it by category. This project is built using Next.js, Typescript, Tailwind CSS, and Golang. The backend is built using Golang with the Gin framework and Gorm as the ORM. The database used is ElephantSQL.</p>
+
+<p>Link to the project github : <a href="https://github.com/zerothy/ristek-pisces">Frontend</a> and <a href="https://github.com/zerothy/ristek-go-be">Backend</a></p>
+
+
+Attached is the picture of the project:
+
+![Money Management Web](https://i.imgur.com/qmMGxPV.png "Money Management Web")
+![Money Management Web](https://i.imgur.com/nag8nr5.png "Money Management Web")
+![Money Management Web](https://i.imgur.com/Sj7ZpT0.png "Money Management Web")
+
 ## Description
 
 This is the repository made for RISTEK Open Recruitment Web Development project.
